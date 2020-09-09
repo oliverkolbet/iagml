@@ -1,5 +1,5 @@
 # iagml
-It's A Simple Markup Language
+It's A Generic Markup Language
 
 Basically translates its own syntax into HTML
 
