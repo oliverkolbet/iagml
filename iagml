@@ -1,0 +1,207 @@
+#! /usr/bin/env python3
+
+# IAGML code translator
+from sys import argv, stdout, exit
+from os import system as cm
+
+# List of valid letters and tags:
+validLetters='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+validTags=['huge','bigger','big','link','low','high','crossedout','image','bold','italic','underline','bulletlist','numberedlist','text']
+
+# defining various useful functions
+
+def checkSyntax(line):
+	if len(line) == 0:
+		return
+	if line[0] == '#':
+		return
+	elif line[0] != '\\':
+		print('ERROR: Line number '+(line.split('`'))[0]+' is missing a backslash.')
+		exit(1)
+	line = line[1:]
+	splitline = line.split('`')
+	try:
+		lineNum=int(splitline[0])
+	except ValueError:
+		print('ERROR: The line number \"'+splitline[0]+'\" was invalid.')
+		exit(1)
+
+	if len(splitline) < 2:
+		print('ERROR: There is a missing tag on line '+str(lineNum))
+		exit(1)
+	elif len(splitline) < 3:
+		print('ERROR: The tag on line '+str(lineNum)+' has no ending character.')
+		exit(1)
+	for char in splitline[1]:
+		if char not in validLetters:
+			print('ERROR: There is an errant character in the tag on line '+str(lineNum))
+			exit(1)
+
+
+def checkGrammar(line):
+	if len(line) == 0:
+		return
+	if line[0] == '#':
+		return
+	line=line[1:]
+	splitline=line.split('`')
+	lineNum=splitline[0]
+	if len(splitline) < 2:
+		print('ERROR: There is a missing tag on line '+str(lineNum))
+		exit(1)
+	elif len(splitline) < 3:
+		print('ERROR: The tag on line '+str(lineNum)+' has no ending character.')
+		exit(1)
+	if splitline[1] not in validTags:
+		print('ERROR: There is an invalid tag on line '+str(lineNum))
+		exit(1)
+if len(argv) < 2:
+	print('No file given. Listing iagml files...')
+	cm('ls *.iagml *.iagml')
+	exit(1)
+elif len(argv) > 1:
+	print('Parsing '+argv[1])
+	infile=argv[1]
+	outfile=(infile.split('.'))[0]+'.html'
+if len(argv) > 2:
+	if argv[2] == 'to':
+		if len(argv) > 3:
+			outfile=argv[3]
+		else:
+			print('You didn\'t specify an output file, so we\'ll just parse '+argv[1]+' normally.')
+	else:
+		print('FYI, \''+argv[2]+'\' is an invalid second argument, so we\'ll just parse the file normally.')
+
+#Read the file.
+try:
+	f=open(infile,'r')
+except FileNotFoundError:
+	print('The file you gave does not exist!')
+	exit(1)
+code=f.read()
+code=code.split('\n')
+f.close()
+
+for b in code:
+	checkSyntax(b)
+	checkGrammar(b)
+	if b == '' or b == ' ' or b == '\n':
+		code.remove(b)
+	elif b[0] == '#':
+		code.remove(b)
+	elif len(b) < 1:
+		code.remove(b)
+
+print('All lines have valid grammar and syntax!')
+
+# Start translating!
+
+translated=[]
+
+for l in code:
+	s=l.split('`')
+	if l == '' or l == ' ' or l == '\n':
+		pass
+	elif l[0] == '#':
+		pass
+	elif s[1] == 'text':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<p>"+c+"</p>")
+	elif s[1] == 'huge':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<h1>"+c+"</h1>")
+	elif s[1] == 'bigger':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<h2>"+c+"</h2>")
+	elif s[1] == 'big':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<h3>"+c+"</h3>")
+	elif s[1] == 'link':
+		c=''
+		for char in s[3]:
+			if char=="\\":
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<a href=\""+s[2]+"\">"+c+"</a>")
+	elif s[1] == 'lower':
+		c=''
+		for char in s[2]:
+			if char=="\\":
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<sub>"+c+"</sub>")
+	elif s[1] == 'higher':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<sup>"+c+"</sup>")
+	elif s[1] == 'crossedout':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<del>"+c+"</del>")
+	elif s[1] == 'image':
+		translated.append("<img src=\""+s[2]+"\"/>")
+	elif s[1] == 'italic':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<em>"+c+"</em>")
+	elif s[1] == 'underline':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<u>"+c+"</u>")
+	elif s[1] == 'bulletlist':
+		lst=s[3].split(s[2])
+		c="<ul>"
+		for item in lst:
+			c+=("\n\t<li>"+item+"</li>")
+		c+="\n</ul>"
+	elif s[1] == 'numberedlist':
+		lst=s[3].split(s[2])
+		c="<ol>"
+		for item in lst:
+			c+=("\n\t<li>"+item+"</li>")
+		c+="\n</ol>"
+
+# Out to file
+f=open(outfile,'w')
+f.write('\n'.join(translated))
+f.close()
+
+print("HTML outputted to "+outfile)
