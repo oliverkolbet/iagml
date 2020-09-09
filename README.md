@@ -24,3 +24,11 @@ The above example would turn into:
 ```
 
 Comments in IAGML are lines starting with #.
+
+## Once you clone this repository:
+
+go to the iagml folder and type ``./iagml test.iagml``.
+
+There will be a test.html file. open that with any browser you want to use.
+
+Look at both the test.html and test.iagml files.
