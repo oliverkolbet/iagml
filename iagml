@@ -6,7 +6,7 @@ from os import system as cm
 
 # List of valid letters and tags:
 validLetters='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-validTags=['huge','bigger','big','link','low','high','crossedout','image','bold','italic','underline','bulletlist','numberedlist','text']
+validTags=['huge','bigger','big','link','low','high','crossedout','image','bold','italic','underline','bulletlist','numberedlist','text','default']
 
 # defining various useful functions
 
@@ -112,6 +112,14 @@ for l in code:
 			else:
 				c+=char
 		translated.append("<p>"+c+"</p>")
+	elif s[1] == 'default':
+		c=''
+		for char in s[2]:
+			if char=='\\':
+				c+='<br>'
+			else:
+				c+=char
+		translated.append("<text>"+c+"</text>")
 	elif s[1] == 'huge':
 		c=''
 		for char in s[2]:
@@ -144,7 +152,7 @@ for l in code:
 			else:
 				c+=char
 		translated.append("<a href=\""+s[2]+"\">"+c+"</a>")
-	elif s[1] == 'lower':
+	elif s[1] == 'low':
 		c=''
 		for char in s[2]:
 			if char=="\\":
@@ -152,7 +160,7 @@ for l in code:
 			else:
 				c+=char
 		translated.append("<sub>"+c+"</sub>")
-	elif s[1] == 'higher':
+	elif s[1] == 'high':
 		c=''
 		for char in s[2]:
 			if char=='\\':
@@ -192,16 +200,21 @@ for l in code:
 		for item in lst:
 			c+=("\n\t<li>"+item+"</li>")
 		c+="\n</ul>"
+		translated.append(c)
 	elif s[1] == 'numberedlist':
 		lst=s[3].split(s[2])
 		c="<ol>"
 		for item in lst:
 			c+=("\n\t<li>"+item+"</li>")
 		c+="\n</ol>"
+		translated.append(c)
 
 # Out to file
 f=open(outfile,'w')
-f.write('\n'.join(translated))
+f.write("<htmL>\n\t<head></head>\n\t<body>\n\t\t")
+f.write('\n\t\t'.join(translated))
+f.write("\n\t</body>\n</html>")
+
 f.close()
 
 print("HTML outputted to "+outfile)
