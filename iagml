@@ -202,10 +202,10 @@ for l in code:
 		translated.append("</ul>")
 	elif s[1] == 'numberedlist':
 		lst=s[3].split(s[2])
-                translated.append("<ol>")
-                for item in lst:
-                        translated.append("\t<li>"+item+"</li>")
-                translated.append("</ol>")
+		translated.append("<ol>")
+		for item in lst:
+			translated.append("\t<li>"+item+"</li>")
+		translated.append("</ol>")
 
 # Out to file
 f=open(outfile,'w')
