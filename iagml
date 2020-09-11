@@ -196,18 +196,16 @@ for l in code:
 		translated.append("<u>"+c+"</u>")
 	elif s[1] == 'bulletlist':
 		lst=s[3].split(s[2])
-		c="<ul>"
+		translated.append("<ul>")
 		for item in lst:
-			c+=("\n\t<li>"+item+"</li>")
-		c+="\n</ul>"
-		translated.append(c)
+			translated.append("\t<li>"+item+"</li>")
+		translated.append("</ul>")
 	elif s[1] == 'numberedlist':
 		lst=s[3].split(s[2])
-		c="<ol>"
-		for item in lst:
-			c+=("\n\t<li>"+item+"</li>")
-		c+="\n</ol>"
-		translated.append(c)
+                translated.append("<ol>")
+                for item in lst:
+                        translated.append("\t<li>"+item+"</li>")
+                translated.append("</ol>")
 
 # Out to file
 f=open(outfile,'w')
